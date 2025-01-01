@@ -1,7 +1,7 @@
 <?php
-
 namespace App\Http\Controllers;
-use App\Models\Job;
+use App\Models\job;
+use App\Models\Employer;
 use App\Models\User;
 
 use Auth;
@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 class JobController extends Controller
 {
     public function index(){
-    $job=job::with('employer')->latest()->simplePaginate(3);
+    $job=Job::with('employer')->latest()->simplePaginate(3);
     return view('jobs.index',[ 
         'jobs'=> $job
 
@@ -25,7 +25,7 @@ class JobController extends Controller
 
 
     }
-    public function show(Job $job)
+    public function show(job $job)
     {
         return view ('jobs.show',['job'=>$job]);
 
@@ -42,19 +42,29 @@ class JobController extends Controller
             'Salary'=>request('Salary'),
             'employer_id'=>1,
         ]);
-        // \Illuminate\Support\Facades\Mail::to($job->employer->user)->send(
-        //     new \App\Mail\JobPosted($job)
-        // );
+        dd($job->employer->user);
+
+        // if (!$job->employer) {
+        //     dd('Employer relationship is null');
+        // }
+        
+        // if (!$job->employer->user) {
+        //     dd('User relationship is null');
+        // }
+        
+        \Illuminate\Support\Facades\Mail::to($job->employer->user)->send(
+            new \App\Mail\JobPosted($job)
+        );
         return redirect('/jobs');
     }
     public function edit(Job $job)
     {
             // $job=Job::find($id);
-            // Gate::define('edit-job',function(User $user, Job $job){
-            //     return ($job->employer->user->is($user));
+            Gate::define('edit-job',function(User $user, Job $job){
+                return ($job->employer->user->is($user));
 
-            // });
-            // Gate::authorize('edit-job',$job);
+            });
+            Gate::authorize('edit-job',$job);
             
         
           
@@ -73,7 +83,6 @@ class JobController extends Controller
             'Title' => request('Title'),  // Fix the typo here
             'Salary' => request('Salary'),
         ]);
-    info("line 75");
         return redirect('/jobs/'.$job->id);
     }
     public function delete(Job $job)
