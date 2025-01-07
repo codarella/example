@@ -49,7 +49,7 @@ class JobController extends Controller
         // }
         
         // if (!$job->employer->user) {
-        //     dd('User relationship is null');
+        //     dd('User relationship is null');w
         // }
         
         \Illuminate\Support\Facades\Mail::to($job->employer->user)->send(

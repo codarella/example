@@ -28,6 +28,7 @@
                         <x-form-input type="password" name="password" id="password" required />
                         <x-form-error name="password" />
                     </div>
+                    
                 </x-form-field>
 
             </div>
